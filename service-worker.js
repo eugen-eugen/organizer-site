@@ -22,7 +22,7 @@ const CACHE_NAME = 'static-cache-v1';
 
 // CODELAB: Add list of files to cache here.
 const FILES_TO_CACHE = [
-    
+
 ];
 
 self.addEventListener('install', (evt) => {
@@ -32,7 +32,7 @@ self.addEventListener('install', (evt) => {
       console.log('[ServiceWorker] Pre-caching offline page');
       return cache.addAll(FILES_TO_CACHE);
     })
-);
+  );
 
   self.skipWaiting();
 });
@@ -50,32 +50,32 @@ self.addEventListener('activate', (evt) => {
         }
       }));
     })
-);
- self.clients.claim();
+  );
+  self.clients.claim();
 });
 
 self.addEventListener('fetch', (evt) => {
-  console.log('[ServiceWorker] Fetch', evt);
+  if (evt.request.method === 'GET'){
+  console.log('[ServiceWorker] Fetch', evt.request);
 
 
-  console.log('Response With')
+
   evt.respondWith(
-      fetch(evt.request).then( function (response ) {
-        if(response && response.ok){ 
-        //response.bodyUsed = false 
-        console.log('put: ', evt.request.url)       
+    fetch(evt.request).then(function (response) {
+      if (response && response.ok) {
+        console.log('put: ', evt.request.url)
         caches.open(CACHE_NAME).then(cache => {
-              cache.add(evt.request.url)
-//              cache.put(evt.request.url, response )
-          })
-        }
-          return response
+          cache.add(evt.request.url)
         })
-          .catch(() => {
-            return caches.open(CACHE_NAME)
-                .then((cache) => {
-                  return cache.match(evt.request.url);
-                });
-          })
+      }
+      return response
+    })
+      .catch(() => {
+        return caches.open(CACHE_NAME)
+          .then((cache) => {
+            return cache.match(evt.request.url);
+          });
+      })
   );
+    }
 });
